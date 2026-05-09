@@ -12,10 +12,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("path/to/keystore.jks")  // Ersetze mit dem Pfad zu deinem Keystore
-            storePassword = "store_password"  // Ersetze mit deinem Store-Password
-            keyAlias = "key_alias"  // Ersetze mit deinem Key-Alias
-            keyPassword = "key_password"  // Ersetze mit deinem Key-Password
+            storeFile = file(System.getenv("CM_KEYSTORE_PATH") ?: "path/to/keystore.jks")
+            storePassword = System.getenv("CM_KEYSTORE_PASSWORD") ?: "store_password"
+            keyAlias = System.getenv("CM_KEY_ALIAS") ?: "key_alias"
+            keyPassword = System.getenv("CM_KEY_PASSWORD") ?: "key_password"
         }
     }
 

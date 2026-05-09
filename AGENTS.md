@@ -91,10 +91,15 @@ flutter test  # Runs unit tests (primarily NmeaBuilder)
 - Use realistic test data (e.g., UTC timestamps, known coordinates)
 - Validate checksum calculation and format compliance
 
+### CI/CD with CodeMagic
+- **Setup**: Configure your CodeMagic project with Flutter workflow.
+- **Signing**: Upload your keystore as a secret in CodeMagic. The build.gradle.kts uses environment variables (CM_KEYSTORE_PATH, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS, CM_KEY_PASSWORD) for signing.
+- **Build Command**: Use `flutter build appbundle --release` in CodeMagic for signed AABs ready for Play Store.
+- **iOS**: For iOS builds, ensure provisioning profiles and certificates are set up in CodeMagic.
+
 ## Key Files for Reference
 - `lib/viewmodels/tracker_viewmodel.dart`: Central state management and service orchestration
 - `lib/services/background_service.dart`: Isolate setup and GPS polling loop
 - `lib/services/nmea_builder.dart`: NMEA formatting logic with examples
 - `lib/main.dart`: Provider setup and app initialization
-- `README.md`: Detailed setup and architecture diagrams</content>
-<parameter name="filePath">C:\dev\applications\GPS-NMEA-Mobile-App\AGENTS.md
+- `README.md`: Detailed setup and architecture diagrams
