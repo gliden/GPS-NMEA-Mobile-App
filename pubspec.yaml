@@ -1,0 +1,42 @@
+name: gps_nmea_tracker
+description: GPS NMEA-0183 GPRMC tracker with background mode and HTTP POST
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # GPS / Location
+  geolocator: ^11.0.0
+  permission_handler: ^11.3.0
+
+  # Background execution
+  flutter_background_service: ^5.0.0
+  flutter_local_notifications: ^17.0.0
+
+  # HTTP
+  http: ^1.2.0
+
+  # State management
+  provider: ^6.1.0
+
+  # Shared preferences for persisting settings
+  shared_preferences: ^2.2.0
+
+  # Icons
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
