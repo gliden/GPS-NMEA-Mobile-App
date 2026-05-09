@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/tracker_viewmodel.dart';
+import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -80,8 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             decoration: InputDecoration(
               hintText: 'http://192.168.1.1:8080/gps',
               prefixIcon: const Icon(Icons.link),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               filled: true,
               fillColor: cs.surfaceContainerHighest,
             ),
@@ -93,8 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Sendeintervall',
-                  style: Theme.of(context).textTheme.labelLarge),
+              Text('Sendeintervall', style: Theme.of(context).textTheme.labelLarge),
               Chip(
                 label: Text('$_interval Sek.'),
                 backgroundColor: cs.primaryContainer,
@@ -113,20 +112,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('1 Sek.',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: cs.outline)),
-              Text('60 Sek.',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: cs.outline)),
+              Text('1 Sek.', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.outline)),
+              Text('60 Sek.', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.outline)),
             ],
           ),
 
-          const SizedBox(height: 48),
+          const SizedBox(height: 16),
+
+          // ── Datenschutzrichtlinie ────────────────────────────────────────
+          FilledButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+            ),
+            icon: const Icon(Icons.privacy_tip_rounded),
+            label: const Text('Datenschutzrichtlinie'),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+          ),
+
+          const SizedBox(height: 32),
 
           // ── Speichern ────────────────────────────────────────────────────
           FilledButton.icon(
@@ -135,8 +142,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             label: const Text('Speichern'),
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
           ),
         ],
