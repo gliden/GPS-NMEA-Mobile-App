@@ -14,6 +14,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController _urlController;
+  late TextEditingController _nameController;
   late int _interval;
 
   @override
@@ -21,17 +22,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     final vm = context.read<TrackerViewModel>();
     _urlController = TextEditingController(text: vm.endpointUrl);
+    _nameController = TextEditingController(text: vm.deviceName);
     _interval = vm.intervalSeconds;
   }
 
   @override
   void dispose() {
     _urlController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
     final url = _urlController.text.trim();
+    final name = _nameController.text.trim();
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bitte einen Gerätename eingeben')),
+      );
+      return;
+    }
+
     if (url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Bitte eine URL eingeben')),
@@ -47,16 +59,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return;
     }
 
-    await context.read<TrackerViewModel>().saveSettings(
+    final error = await context.read<TrackerViewModel>().saveSettings(
           url: url,
           intervalSeconds: _interval,
+          deviceName: name,
         );
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Einstellungen gespeichert')),
-      );
-      Navigator.pop(context);
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Einstellungen gespeichert')),
+        );
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -71,6 +90,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
+          // ── Gerätename ─────────────────────────────────────────────────
+          Text('Gerätename', style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _nameController,
+            autocorrect: false,
+            decoration: InputDecoration(
+              hintText: 'Mein GPS Tracker',
+              prefixIcon: const Icon(Icons.device_thermostat),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: cs.surfaceContainerHighest,
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // ── Seriennummer (Read-Only) ────────────────────────────────────
+          Text('Geräteseriennummer', style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 8),
+          Consumer<TrackerViewModel>(
+            builder: (context, vm, _) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: cs.outlineVariant),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.qr_code_2_rounded, color: cs.primary, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      vm.serialNumber,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontFamily: 'monospace',
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
           // ── Endpoint URL ─────────────────────────────────────────────────
           Text('HTTP-Endpunkt', style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),

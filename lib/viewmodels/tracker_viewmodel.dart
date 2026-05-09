@@ -34,6 +34,12 @@ class TrackerViewModel extends ChangeNotifier {
   int _intervalSeconds = SettingsService.defaultInterval;
   int get intervalSeconds => _intervalSeconds;
 
+  String _deviceName = '';
+  String get deviceName => _deviceName;
+
+  String _serialNumber = '';
+  String get serialNumber => _serialNumber;
+
   GprmcSentence? _lastSentence;
   GprmcSentence? get lastSentence => _lastSentence;
 
@@ -52,6 +58,8 @@ class TrackerViewModel extends ChangeNotifier {
   Future<void> init() async {
     _endpointUrl = await _settingsService.getEndpointUrl();
     _intervalSeconds = await _settingsService.getIntervalSeconds();
+    _deviceName = await _settingsService.getDeviceName();
+    _serialNumber = await _settingsService.getSerialNumber();
     _isTracking = await _bgController.isRunning();
     if (_isTracking) _subscribeToBackground();
     notifyListeners();
@@ -95,14 +103,23 @@ class TrackerViewModel extends ChangeNotifier {
   }
 
   // ── Einstellungen ──────────────────────────────────────────────────────────
-  Future<void> saveSettings({
+  Future<String?> saveSettings({
     required String url,
     required int intervalSeconds,
+    required String deviceName,
   }) async {
+    // Validierung: Name ist Pflichtfeld
+    if (deviceName.trim().isEmpty) {
+      return 'Gerätename ist erforderlich.';
+    }
+
     _endpointUrl = url;
     _intervalSeconds = intervalSeconds;
+    _deviceName = deviceName.trim();
+
     await _settingsService.setEndpointUrl(url);
     await _settingsService.setIntervalSeconds(intervalSeconds);
+    await _settingsService.setDeviceName(_deviceName);
 
     if (_isTracking) {
       await _bgController.updateConfig(
@@ -111,6 +128,7 @@ class TrackerViewModel extends ChangeNotifier {
       );
     }
     notifyListeners();
+    return null; // Kein Fehler
   }
 
   void clearHistory() {
@@ -138,9 +156,7 @@ class TrackerViewModel extends ChangeNotifier {
         );
 
         _lastSentence = sentence;
-        _lastError = status == TransmissionStatus.error
-            ? data['error'] as String?
-            : null;
+        _lastError = status == TransmissionStatus.error ? data['error'] as String? : null;
 
         final result = TransmissionResult(
           sentence: sentence,

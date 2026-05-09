@@ -2,6 +2,7 @@
 //
 // Sendet eine GPRMC-Sentence als HTTP-POST an einen konfigurierbaren Endpunkt.
 // Content-Type: text/plain  (rohe NMEA-Zeile im Body)
+// Query-Parameter: imei (Gerätename), serial_num (Seriennummer)
 
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -9,16 +10,25 @@ import '../models/nmea_sentence.dart';
 
 class HttpTransmitter {
   final String endpointUrl;
+  final String deviceName;
+  final String serialNumber;
   final Duration timeout;
 
   const HttpTransmitter({
     required this.endpointUrl,
+    required this.deviceName,
+    required this.serialNumber,
     this.timeout = const Duration(seconds: 10),
   });
 
-  /// Sendet [sentence] per POST. Wirft eine Exception bei Fehler.
+  /// Sendet [sentence] per POST mit Query-Parametern. Wirft eine Exception bei Fehler.
   Future<void> send(GprmcSentence sentence) async {
-    final uri = Uri.parse(endpointUrl);
+    final uri = Uri.parse(endpointUrl).replace(
+      queryParameters: {
+        'imei': deviceName,
+        'serial_num': serialNumber,
+      },
+    );
 
     final response = await http
         .post(

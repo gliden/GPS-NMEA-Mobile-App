@@ -74,6 +74,8 @@ void onBackgroundServiceStart(ServiceInstance service) async {
   // Einstellungen laden
   String endpointUrl = await SettingsService().getEndpointUrl();
   int intervalSeconds = await SettingsService().getIntervalSeconds();
+  String deviceName = await SettingsService().getDeviceName();
+  String serialNumber = await SettingsService().getSerialNumber();
 
   // Auf Konfigurationsänderungen vom UI reagieren
   service.on('update_config').listen((data) {
@@ -112,8 +114,12 @@ void onBackgroundServiceStart(ServiceInstance service) async {
         'status': 'sending',
       });
 
-      // HTTP-Übertragung
-      final transmitter = HttpTransmitter(endpointUrl: endpointUrl);
+      // HTTP-Übertragung mit Query-Parametern
+      final transmitter = HttpTransmitter(
+        endpointUrl: endpointUrl,
+        deviceName: deviceName,
+        serialNumber: serialNumber,
+      );
       await transmitter.send(sentence);
 
       service.invoke('nmea_sentence', {

@@ -68,6 +68,9 @@ flutter test  # Runs unit tests (primarily NmeaBuilder)
 ### HTTP Transmission
 - **Content-Type**: `text/plain; charset=utf-8`
 - **Body**: Raw NMEA sentence string
+- **Query-Parameters**: 
+  - `imei`: Device name (Gerätename) - configured by user in settings
+  - `serial_num`: Unique serial number (Seriennummer) - auto-generated on first app start
 - **User-Agent**: `GpsNmeaTracker/1.0`
 - **Timeout**: 10 seconds
 - **Error handling**: Throws `HttpTransmissionException` on non-2xx responses
@@ -103,3 +106,9 @@ flutter test  # Runs unit tests (primarily NmeaBuilder)
 - `lib/services/nmea_builder.dart`: NMEA formatting logic with examples
 - `lib/main.dart`: Provider setup and app initialization
 - `README.md`: Detailed setup and architecture diagrams
+
+### Device Identification
+- **Device Name (IMEI)**: Required field in settings. User-configurable and sent as `imei` query parameter in HTTP requests
+- **Serial Number**: Auto-generated on first app start (format: `SN-XXXXXXXXXX` with 10 random hex characters), stored persistently, read-only in UI, sent as `serial_num` query parameter
+- **Generation Logic**: Serial number is created only once via `SettingsService.getSerialNumber()` on app init and reused across sessions
+- **Use Case**: Enables server-side tracking and identification of individual devices without requiring unique hardware identifiers
